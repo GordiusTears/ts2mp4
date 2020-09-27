@@ -22,6 +22,7 @@ end
 ARGV.each{|ts|
   if /\.ts/ =~ ts then
     stdout, stderr, status = Open3.capture3("ffprobe #{ts}")
+    ffmpegprog = "C\:\\cygwin64\\usr\\local\\bin\\ffmpeg\.exe"
     info = NKF.nkf("-w", stderr)
     v,a  = get_ch(info)
 
@@ -32,12 +33,12 @@ ARGV.each{|ts|
     }
     
     outfile = ts.gsub(/\.ts/, '.mp4')
-    command = "ffmpeg -y -i #{ts}  -threads 0 -f mp4"
-    command += " -vcodec libx264 -b:v 2000k -vpre libx264 -r 30000/1001 -aspect 16:9 -s 1920x1080"
+    command = "#{ffmpegprog} -y -i #{ts}  -threads 0 -f mp4"
+    command += " -vcodec libx264 -b:v 2000k -vpre libx264 -r 30000/1001 -aspect 16:9 -s 1024x768"
     command += " -bufsize 20000k -maxrate 25000k -vsync 1 -async 1000 -crf 23.0 -level 30 -qmin 10"
     command += " -acodec libfdk_aac -strict experimental -b:a 192k -ac 2 -ar 48000 #{map_v} #{map_a}  #{outfile}"
     puts command
     system(command)
 
-    end
+  end
 }
